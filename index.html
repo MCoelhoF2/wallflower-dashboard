@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estatísticas Wallflower</title>
+    <link rel="stylesheet" href="./static/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Painel de campanha</p>
+                <h1>Estatísticas Wallflower</h1>
+                <p class="subtitle">
+                    Acompanhe a evolução dos personagens ao longo das missões e compare liderança e participação em cada indicador.
+                </p>
+            </div>
+            <div class="hero-meta">
+                <div class="meta-box">
+                    <span>Missão em foco</span>
+                    <strong id="heroMission">--</strong>
+                </div>
+                <div class="meta-box">
+                    <span>Indicador em foco</span>
+                    <strong id="heroMetric">--</strong>
+                </div>
+            </div>
+        </header>
+
+        <section class="filter-panel">
+            <div class="filter-panel-header">
+                <div>
+                    <h2>Filtros</h2>
+                    <p>Selecione a missão, o indicador, o grupo e o personagem para reorganizar o painel.</p>
+                </div>
+                <span class="pill">Recorte atual</span>
+            </div>
+
+            <div class="filters">
+                <div class="filter-item">
+                    <label for="missionFilter">Missão</label>
+                    <select id="missionFilter">
+                        <option value="">Última missão</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="metricFilter">Indicador</label>
+                    <select id="metricFilter">
+                        <option value="">Indicador padrão</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="groupFilter">Grupo</label>
+                    <select id="groupFilter">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="characterFilter">Personagem</label>
+                    <select id="characterFilter">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button id="applyFilters" class="primary-btn">Aplicar filtros</button>
+                    <button id="clearFilters" class="ghost-btn" type="button">Limpar</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="avatar-panel">
+            <div class="filter-panel-header avatar-panel-header">
+                <div>
+                    <h2>Elenco</h2>
+                    <p>Use os avatares para focar rapidamente em um personagem.</p>
+                </div>
+                <span class="pill">Seleção rápida</span>
+            </div>
+            <div id="avatarStrip" class="avatar-strip"></div>
+        </section>
+
+        <section class="kpi-grid" id="kpiGrid">
+            <article class="kpi-card kpi-card-leader kpi-card-total" id="totalAccumulatedCard">
+                <span>Total acumulado</span>
+                <div class="leader-kpi">
+                    <div class="leader-avatar-frame" id="totalAccumulatedAvatarFrame">
+                        <img id="totalAccumulatedAvatar" src="" alt="Avatar do foco atual" />
+                    </div>
+                    <div class="leader-kpi-copy leader-kpi-copy-total">
+                        <strong id="totalAccumulatedName">--</strong>
+                        <small id="totalAccumulatedValueText">--</small>
+                    </div>
+                </div>
+            </article>
+
+            <article class="kpi-card kpi-card-leader">
+                <span>Personagem líder</span>
+                <div class="leader-kpi">
+                    <div class="leader-avatar-frame">
+                        <img id="leaderPcAvatar" src="" alt="Avatar do personagem líder" />
+                    </div>
+                    <div class="leader-kpi-copy">
+                        <strong id="leaderPcName">--</strong>
+                        <small id="leaderPcValueText">--</small>
+                    </div>
+                </div>
+            </article>
+
+            <article class="kpi-card kpi-card-leader">
+                <span>Personagem líder (NPC)</span>
+                <div class="leader-kpi">
+                    <div class="leader-avatar-frame">
+                        <img id="leaderNpcAvatar" src="" alt="Avatar do personagem líder NPC" />
+                    </div>
+                    <div class="leader-kpi-copy">
+                        <strong id="leaderNpcName">--</strong>
+                        <small id="leaderNpcValueText">--</small>
+                    </div>
+                </div>
+            </article>
+            <article class="kpi-card kpi-card-mini hidden" id="metricKpiDamageApplied">
+                <span>Dano aplicado</span>
+                <strong id="metricKpiDamageAppliedValue">--</strong>
+            </article>
+
+            <article class="kpi-card kpi-card-mini hidden" id="metricKpiDamageReceived">
+                <span>Dano recebido</span>
+                <strong id="metricKpiDamageReceivedValue">--</strong>
+            </article>
+
+            <article class="kpi-card kpi-card-mini hidden" id="metricKpiHeatApplied">
+                <span>Heat aplicado</span>
+                <strong id="metricKpiHeatAppliedValue">--</strong>
+            </article>
+
+            <article class="kpi-card kpi-card-mini hidden" id="metricKpiKills">
+                <span>Abates</span>
+                <strong id="metricKpiKillsValue">--</strong>
+            </article>
+
+            <article class="kpi-card kpi-card-mini hidden" id="metricKpiScans">
+                <span>Scans</span>
+                <strong id="metricKpiScansValue">--</strong>
+            </article>
+        </section>
+
+        <section class="chart-grid">
+            <article class="panel panel-large panel-featured">
+                <div class="panel-header">
+                    <h2>Destaques dos personagens</h2>
+                    <span class="pill">Evolução</span>
+                </div>
+                <div id="productChart" class="chart chart-featured"></div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Ranking dos personagens</h2>
+                    <span class="pill">Missão filtrada</span>
+                </div>
+                <div id="categoryChart" class="chart chart-ranking"></div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <h2 id="shareChartTitle">Distribuição do indicador</h2>
+                    <span class="pill">Distribuição</span>
+                </div>
+                <div id="regionChart" class="chart"></div>
+            </article>
+
+            <article class="panel panel-large">
+                <div class="panel-header">
+                    <h2>Indicadores por personagem no recorte</h2>
+                    <span class="pill">Comparativo</span>
+                </div>
+                <div id="ticketChart" class="chart"></div>
+            </article>
+
+            <article class="panel panel-large panel-missions">
+                <div class="panel-header">
+                    <h2>Trajetória ao longo das missões</h2>
+                    <span class="pill" id="revenuePill">Indicador</span>
+                </div>
+                <div id="revenueChart" class="chart"></div>
+            </article>
+        </section>
+
+        <footer class="footer-note">
+            <span id="lastUpdated">Missão: --</span>
+        </footer>
+    </div>
+
+    <script src="./static/js/dashboard.js"></script>
+</body>
+</html>
